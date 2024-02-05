@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -17,6 +19,12 @@ public class ToDoService {
     private final ToDoRepository todorepository;
 
     // Todo 작성
+    /*
+    * Transactional: 트랜잭션에 대한 읽기 전용 및 롤백 조건 설정 가능 , 관리자 지정 가능
+    * ex) 송금 -> 수취 -> 이체 순서로 처리할 save라는 메서드가 있다면, @Transactional을 메서드 위에 설정했을때
+    * 3단계 로직들은 하나의 트랜잭션으로 묶어서 처리된다. (Transactional 어노테이션이 적용되어있기 때문)
+    * => 어디서든 예외 상황이 발생하더라도 모두 롤백 처리 되기 때문에 데이터 일관성이 유지된다.
+    * */
     @Transactional
     public Long save(ToDoVo todo){
         todorepository.save(todo);
@@ -25,8 +33,9 @@ public class ToDoService {
     }
 
     // Todo 전체 조회
-    public List<ToDoVo> findTodos(boolean orderState){
-        return todorepository.findAll(orderState);
+    public List<ToDoVo> findTodos(Map<String, Object> params){
+
+        return todorepository.findAll(params);
     }
 
     // Todo 단건 조회

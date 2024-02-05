@@ -11,7 +11,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,15 +28,22 @@ public class ToDoController {
     public String createJsonTodo(@RequestBody @Valid ToDoForm form, BindingResult bindingResult){
         log.info("Post : Todo Save");
 
+        // 하단 - 요청 파라미터 validation 체크
         return validation(form, bindingResult);
     }
 
     // Todo 목록
+    //@GetMapping("/todos/{orderState}")
     @GetMapping("/todos/{orderState}")
-    public List<ToDoVo> list(@PathVariable("orderState") Boolean orderState){
+    public List<ToDoVo> list(@PathVariable("orderState") Boolean orderState, @RequestParam String sort){
+
         log.info("Get : Todos List");
 
-        return todoservice.findTodos(orderState);
+        Map<String, Object> params = new HashMap<>();
+        params.put("orderState", orderState);
+        params.put("sort", sort);
+
+        return todoservice.findTodos(params);
     }
 
     // Todo 완료 상태 업데이트
@@ -89,11 +99,13 @@ public class ToDoController {
     // 요청 파라미터 validation 체크
     private String validation(@Valid @RequestBody ToDoForm form, BindingResult bindingResult) {
 
-        if(bindingResult.hasErrors()){
+        // hasErrors : error의 유무를 판단
+        if(bindingResult.hasErrors()) {
             return "todo error";
         }
 
         ToDoVo todo = new ToDoVo();
+
         todo.setItem(form.getItem());
         todo.setCompleted(form.isCompleted());
         todo.setDate(form.getDate());
@@ -105,6 +117,7 @@ public class ToDoController {
 
         return "ok";
     }
+
     @Data
     static class UpdateTodoRequest{
         private Long id;

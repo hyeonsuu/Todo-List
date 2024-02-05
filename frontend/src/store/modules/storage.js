@@ -4,21 +4,27 @@ import {store} from "@/store/store";
 const storage = {
     async fetch(orderState) {
         var setState = true;
+        var sort = "";
         /* 서버 통신 */
         const arr = [];
 
         if(orderState === undefined || orderState === null){
             setState === true;
+            sort = "DESC"
         }
         else if(orderState != null || orderState != ""){
             setState = orderState;
+            sort = "ASC"
         }
 
+        const params = {};
+        params.setState = setState;
+        params.sort = sort;
+
         await axios
-            .get('/todos/' + setState)
+            .get(`/todos/${setState}?sort=${sort}`)
             .then(res => {
                 const jsonData = res.data;
-
                 if(jsonData.length > 0){
                     for(let i = 0 ; i < jsonData.length; i++){
                         arr.push(

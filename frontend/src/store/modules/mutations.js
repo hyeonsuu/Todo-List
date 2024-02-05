@@ -58,6 +58,7 @@ const toggleOneItem = (state, payload) => {
 // 모든 아이템 삭제
 const clearAllItem = (state) => {
     var todoItems = state.todoItems;
+
     if(todoItems.length > 0){
         axios
             .put('/todos/clear')
